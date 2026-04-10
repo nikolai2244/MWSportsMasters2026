@@ -1,0 +1,28 @@
+﻿{
+  "name": "LatestWin",
+  "type": "object",
+  "properties": {
+    "event_name": {
+      "type": "string"
+    },
+    "pick": {
+      "type": "string"
+    },
+    "odds": {
+      "type": "string"
+    },
+    "payout": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "event_name",
+    "pick",
+    "odds",
+    "payout",
+    "date"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "MW Sports Masters 2026",
+  "short_name": "MW Masters",
+  "description": "Elite golf betting analysis for Masters 2026.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0e1726",
+  "theme_color": "#0e1726",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48 64x64 96x96 128x128 256x256",
+      "type": "image/x-icon"
+    }
+  ]
+}

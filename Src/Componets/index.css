@@ -1,0 +1,197 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
+@import url('https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --font-display: 'Cormorant Garamond', serif;
+        --font-body: 'Satoshi', sans-serif;
+        --font-mono: 'JetBrains Mono', monospace;
+        --background: 90 20% 4%;
+        --foreground: 42 30% 90%;
+        --card: 100 25% 7%;
+        --card-foreground: 42 30% 90%;
+        --popover: 100 25% 7%;
+        --popover-foreground: 42 30% 90%;
+        --primary: 100 48% 32%;
+        --primary-foreground: 42 30% 95%;
+        --secondary: 100 20% 10%;
+        --secondary-foreground: 42 30% 90%;
+        --muted: 100 15% 12%;
+        --muted-foreground: 100 15% 55%;
+        --accent: 45 70% 47%;
+        --accent-foreground: 90 20% 4%;
+        --destructive: 0 65% 55%;
+        --destructive-foreground: 0 0% 98%;
+        --border: 100 20% 18%;
+        --input: 100 20% 15%;
+        --ring: 100 48% 32%;
+        --radius: 0.5rem;
+        --color-birdie: 145 45% 43%;
+        --color-eagle: 45 85% 60%;
+        --color-bogey: 0 55% 52%;
+        --color-par: 100 15% 55%;
+        --color-win: 150 55% 52%;
+        --color-loss: 0 70% 58%;
+        --color-active: 40 80% 55%;
+        --color-push: 100 10% 45%;
+        --color-gold: 45 70% 47%;
+        --color-surface2: 100 22% 9%;
+        --color-surface-offset: 100 20% 13%;
+        --chart-1: 100 48% 32%;
+        --chart-2: 45 70% 47%;
+        --chart-3: 150 55% 52%;
+        --chart-4: 0 65% 55%;
+        --chart-5: 100 15% 55%;
+        --sidebar-background: 100 25% 5%;
+        --sidebar-foreground: 42 30% 90%;
+        --sidebar-primary: 100 48% 32%;
+        --sidebar-primary-foreground: 42 30% 95%;
+        --sidebar-accent: 100 20% 10%;
+        --sidebar-accent-foreground: 42 30% 90%;
+        --sidebar-border: 100 20% 18%;
+        --sidebar-ring: 100 48% 32%;
+    }
+
+    .light {
+        --background: 40 30% 96%;
+        --foreground: 100 25% 10%;
+        --card: 40 25% 98%;
+        --card-foreground: 100 25% 10%;
+        --popover: 40 25% 98%;
+        --popover-foreground: 100 25% 10%;
+        --primary: 100 48% 32%;
+        --primary-foreground: 42 30% 95%;
+        --secondary: 40 20% 92%;
+        --secondary-foreground: 100 25% 10%;
+        --muted: 40 15% 90%;
+        --muted-foreground: 100 10% 40%;
+        --accent: 45 70% 47%;
+        --accent-foreground: 100 25% 10%;
+        --destructive: 0 65% 55%;
+        --destructive-foreground: 0 0% 98%;
+        --border: 40 15% 82%;
+        --input: 40 15% 85%;
+        --ring: 100 48% 32%;
+        --color-surface2: 40 20% 94%;
+        --color-surface-offset: 40 15% 90%;
+        --sidebar-background: 40 25% 96%;
+        --sidebar-foreground: 100 25% 10%;
+        --sidebar-primary: 100 48% 32%;
+        --sidebar-primary-foreground: 42 30% 95%;
+        --sidebar-accent: 40 20% 92%;
+        --sidebar-accent-foreground: 100 25% 10%;
+        --sidebar-border: 40 15% 82%;
+        --sidebar-ring: 100 48% 32%;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border outline-ring/50;
+    }
+
+    body {
+        @apply bg-background text-foreground font-body;
+    }
+}
+
+@layer utilities {
+    .font-display {
+        font-family: var(--font-display);
+    }
+
+    .font-body {
+        font-family: var(--font-body);
+    }
+
+    .font-mono {
+        font-family: var(--font-mono);
+    }
+}
+
+/* Gold shimmer animation */
+@keyframes shimmer {
+    0% {
+        background-position: -200% center;
+    }
+
+    100% {
+        background-position: 200% center;
+    }
+}
+
+.gold-shimmer {
+    background: linear-gradient(90deg, hsl(var(--accent)) 0%, hsl(45 90% 70%) 50%, hsl(var(--accent)) 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s linear infinite;
+}
+
+/* Pulse glow */
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 0 0 5px hsl(var(--color-win) / 0.3);
+    }
+
+    50% {
+        box-shadow: 0 0 20px hsl(var(--color-win) / 0.6);
+    }
+}
+
+.glow-win {
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-loss-glow {
+    0%, 100% {
+        box-shadow: 0 0 5px hsl(var(--color-loss) / 0.3);
+    }
+
+    50% {
+        box-shadow: 0 0 20px hsl(var(--color-loss) / 0.6);
+    }
+}
+
+.glow-loss {
+    animation: pulse-loss-glow 2s ease-in-out infinite;
+}
+
+/* Live pulse */
+@keyframes live-pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.3;
+    }
+}
+
+.live-dot {
+    animation: live-pulse 1.5s ease-in-out infinite;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+}
+
+::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 3px;
+}
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: hsl(var(--muted-foreground));
+    }

@@ -1,0 +1,113 @@
+﻿{
+  "name": "Bet",
+  "type": "object",
+  "properties": {
+    "bet_type": {
+      "type": "string",
+      "enum": [
+        "Group Match-Up",
+        "Top 30",
+        "Top 20",
+        "Top 10",
+        "Top 5",
+        "Round Strokes",
+        "Round Birdies",
+        "Round Bogeys",
+        "Parlay"
+      ]
+    },
+    "player_name": {
+      "type": "string"
+    },
+    "round": {
+      "type": "string",
+      "enum": [
+        "Tournament",
+        "R1",
+        "R2",
+        "R3",
+        "R4"
+      ]
+    },
+    "line_detail": {
+      "type": "string"
+    },
+    "pick": {
+      "type": "string"
+    },
+    "odds": {
+      "type": "number"
+    },
+    "stake": {
+      "type": "number"
+    },
+    "sportsbook": {
+      "type": "string",
+      "enum": [
+        "DraftKings",
+        "FanDuel",
+        "Hard Rock Bet",
+        "BetMGM",
+        "Other"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Active",
+        "Win",
+        "Loss",
+        "Push"
+      ],
+      "default": "Active"
+    },
+    "result_detail": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "parlay_legs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "player_name": {
+            "type": "string"
+          },
+          "pick": {
+            "type": "string"
+          },
+          "odds": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "group_players": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "current_position": {
+      "type": "number"
+    },
+    "actual_score": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "bet_type",
+    "player_name",
+    "round",
+    "pick",
+    "odds",
+    "stake",
+    "sportsbook",
+    "status"
+  ]
+}
