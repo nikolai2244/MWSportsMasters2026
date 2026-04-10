@@ -177,6 +177,23 @@
     animation: live-pulse 1.5s ease-in-out infinite;
 }
 
+/* Announcement marquee */
+@keyframes announcement-marquee {
+    0% {
+        transform: translateX(0%);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+.announcement-track {
+    display: inline-flex;
+    min-width: 200%;
+    animation: announcement-marquee 32s linear infinite;
+}
+
 /* Scrollbar styling */
 ::-webkit-scrollbar {
     width: 6px;
