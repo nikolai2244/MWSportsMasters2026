@@ -10,6 +10,9 @@ on:
   - push
   - workflow_dispatch
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   retrieve-project:
     name: check readiness
@@ -26,7 +29,6 @@ jobs:
           service-host: api-us.ionos.space
           project-id: bad3efe8-2805-46ee-aaef-2405a51c4823
           action: retrieve-info
-
 
   build:
     name: build
