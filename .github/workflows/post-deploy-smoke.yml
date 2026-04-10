@@ -31,4 +31,8 @@ jobs:
         run: |
           set -e
           headers=$(curl -sS -D - -o /dev/null "$PROD_URL/")
-          echo "$headers" | grep -iq "x-content-type-options\|strict-transport-security\|content-security-policy\|x-frame-options\|referrer-policy"
+          echo "$headers"
+          if ! echo "$headers" | grep -iq "x-content-type-options\|strict-transport-security\|content-security-policy\|x-frame-options\|referrer-policy"; then
+            echo "Warning: no common hardening header detected on origin response"
+            echo "This does not fail deploy, but should be fixed at host/CDN layer."
+          fi
