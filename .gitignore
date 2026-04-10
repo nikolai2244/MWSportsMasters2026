@@ -18,6 +18,9 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# Local backup temp
+.backup-tmp/
+
 # OS/editor noise
 .DS_Store
 .vscode/

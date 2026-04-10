@@ -94,6 +94,12 @@ Deploy folder:
   - GET /api/picks
 - Confirm no CORS errors in browser console
 
+## 6) Offsite Backup (IONOS)
+
+- Follow [IONOS_BACKUP.md](IONOS_BACKUP.md)
+- Use [scripts/backup-ionos.sh](scripts/backup-ionos.sh) for daily snapshots
+- Store only source and config, not build outputs or real env secrets
+
 Automation:
 
 - GitHub Actions now includes [post-deploy-smoke.yml](.github/workflows/post-deploy-smoke.yml)

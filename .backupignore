@@ -1,0 +1,10 @@
+.git
+node_modules
+Backend/node_modules
+Src/Componets/node_modules
+Src/Componets/dist
+*.log
+.env
+.env.*
+!.env.example
+.backup-tmp
