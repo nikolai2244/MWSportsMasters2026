@@ -93,3 +93,8 @@ Deploy folder:
   - GET /healthz
   - GET /api/picks
 - Confirm no CORS errors in browser console
+
+Automation:
+
+- GitHub Actions now includes [post-deploy-smoke.yml](.github/workflows/post-deploy-smoke.yml)
+- It runs automatically after successful IONOS deployment and fails if core routes are not returning 200

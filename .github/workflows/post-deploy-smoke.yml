@@ -1,0 +1,34 @@
+name: Post Deploy Smoke Test
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Deploy Now: Deploy to IONOS"]
+    types: [completed]
+
+jobs:
+  smoke:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify production routes
+        env:
+          PROD_URL: https://mayorwardprodsports.com
+        run: |
+          set -e
+          for path in / /leaderboard /about /signup /bets; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "$PROD_URL$path")
+            echo "$path -> $code"
+            if [ "$code" -ne 200 ]; then
+              echo "Route check failed for $path"
+              exit 1
+            fi
+          done
+
+      - name: Verify security headers exist
+        env:
+          PROD_URL: https://mayorwardprodsports.com
+        run: |
+          set -e
+          headers=$(curl -sS -D - -o /dev/null "$PROD_URL/")
+          echo "$headers" | grep -iq "x-content-type-options\|strict-transport-security\|content-security-policy\|x-frame-options\|referrer-policy"
