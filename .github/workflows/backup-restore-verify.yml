@@ -1,0 +1,104 @@
+name: IONOS Backup Restore Verify
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "45 2 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  verify-restore:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate restore verification configuration
+        id: cfg
+        env:
+          IONOS_S3_ENDPOINT: ${{ secrets.IONOS_S3_ENDPOINT }}
+          IONOS_S3_BUCKET: ${{ secrets.IONOS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.IONOS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.IONOS_AWS_SECRET_ACCESS_KEY }}
+        run: |
+          set -e
+          missing=0
+          for v in IONOS_S3_ENDPOINT IONOS_S3_BUCKET AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY; do
+            if [ -z "${!v}" ]; then
+              echo "Missing required secret: $v"
+              missing=1
+            fi
+          done
+
+          if [ "$missing" -eq 1 ]; then
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Skip when secrets are missing
+        if: ${{ steps.cfg.outputs.enabled != 'true' }}
+        run: |
+          echo "Restore verification skipped because required IONOS secrets are not configured."
+          echo "Set IONOS_S3_ENDPOINT, IONOS_S3_BUCKET, IONOS_AWS_ACCESS_KEY_ID, IONOS_AWS_SECRET_ACCESS_KEY."
+
+      - name: Download latest backup archive
+        if: ${{ steps.cfg.outputs.enabled == 'true' }}
+        env:
+          IONOS_S3_ENDPOINT: ${{ secrets.IONOS_S3_ENDPOINT }}
+          IONOS_S3_BUCKET: ${{ secrets.IONOS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.IONOS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.IONOS_AWS_SECRET_ACCESS_KEY }}
+          BACKUP_PREFIX: ${{ vars.BACKUP_PREFIX }}
+        run: |
+          set -euo pipefail
+          PREFIX="${BACKUP_PREFIX:-repo-backups}"
+
+          latest_key=$(aws --endpoint-url "$IONOS_S3_ENDPOINT" s3api list-objects-v2 \
+            --bucket "$IONOS_S3_BUCKET" \
+            --prefix "$PREFIX/" \
+            --query 'reverse(sort_by(Contents, &LastModified))[0].Key' \
+            --output text)
+
+          if [ -z "$latest_key" ] || [ "$latest_key" = "None" ]; then
+            echo "No backup archive found under prefix: $PREFIX/"
+            exit 1
+          fi
+
+          echo "Latest backup key: $latest_key"
+          aws --endpoint-url "$IONOS_S3_ENDPOINT" s3 cp "s3://$IONOS_S3_BUCKET/$latest_key" ./latest-backup.tar.gz
+
+      - name: Validate archive integrity
+        if: ${{ steps.cfg.outputs.enabled == 'true' }}
+        run: |
+          set -e
+          gzip -t latest-backup.tar.gz
+          tar -tzf latest-backup.tar.gz > archive-file-list.txt
+
+      - name: Verify required files exist in backup
+        if: ${{ steps.cfg.outputs.enabled == 'true' }}
+        run: |
+          set -e
+          required=(
+            "./Backend/server.js"
+            "./Backend/package.json"
+            "./Src/Componets/package.json"
+            "./Src/Componets/app.jsx"
+            "./.github/workflows/ci.yml"
+          )
+
+          for f in "${required[@]}"; do
+            if ! grep -qx "$f" archive-file-list.txt; then
+              echo "Missing required file in backup archive: $f"
+              exit 1
+            fi
+          done
+
+      - name: Upload restore verification artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ionos-restore-verify-${{ github.run_id }}
+          path: |
+            archive-file-list.txt
+            latest-backup.tar.gz
+          if-no-files-found: ignore

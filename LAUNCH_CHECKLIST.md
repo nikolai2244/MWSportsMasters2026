@@ -99,6 +99,7 @@ Deploy folder:
 - Follow [IONOS_BACKUP.md](IONOS_BACKUP.md)
 - Use [scripts/backup-ionos.sh](scripts/backup-ionos.sh) for daily snapshots
 - Backup automation workflow: [.github/workflows/backup-ionos.yml](.github/workflows/backup-ionos.yml)
+- Restore verification workflow: [.github/workflows/backup-restore-verify.yml](.github/workflows/backup-restore-verify.yml)
 - Store only source and config, not build outputs or real env secrets
 
 Automation:

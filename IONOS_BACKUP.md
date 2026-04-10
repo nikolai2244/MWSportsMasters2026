@@ -47,6 +47,13 @@ This repo includes [.github/workflows/backup-ionos.yml](.github/workflows/backup
 - On demand (`workflow_dispatch`)
 - Daily at 02:15 UTC
 
+This repo also includes [.github/workflows/backup-restore-verify.yml](.github/workflows/backup-restore-verify.yml), which runs:
+
+- On demand (`workflow_dispatch`)
+- Daily at 02:45 UTC
+- Downloads the latest backup from IONOS and validates archive integrity
+- Verifies critical project files are present in the archive
+
 Set these repository secrets:
 
 - `IONOS_S3_ENDPOINT`
