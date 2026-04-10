@@ -1,6 +1,3 @@
-# To better understand this file read this:
-# https://docs.ionos.space/docs/github-actions-customization/
-
 name: "Deploy Now: Execute Build"
 
 on:
@@ -14,10 +11,9 @@ on:
         type: string
 
 env:
-  DEPLOYMENT_FOLDER: ./
+  DEPLOYMENT_FOLDER: Src/Componets/dist/
 
 jobs:
-# Please do not rename this job
   build-project:
     name: build MWSportsMasters2026
     runs-on: ubuntu-latest
@@ -36,11 +32,11 @@ jobs:
         env:
           CI: true
           SITE_URL: ${{ inputs.site-url }}
+        working-directory: Src/Componets/
         run: |
           npm install
           npm run build
 
-# Please do not touch the following action
       - name: Store deployment content
         uses: ionos-deploy-now/artifact-action@v1
         with:
@@ -49,6 +45,6 @@ jobs:
           project-id: bad3efe8-2805-46ee-aaef-2405a51c4823
           branch-id: ${{ inputs.branch-id }}
           version: ${{ github.sha }}
-          folder: ${{ env.DEPLOYMENT_FOLDER }}
+          folder: Src/Componets/dist/
           config-file: .deploy-now/MWSportsMasters2026/config.yaml
           action: upload
