@@ -98,3 +98,6 @@ Automation:
 
 - GitHub Actions now includes [post-deploy-smoke.yml](.github/workflows/post-deploy-smoke.yml)
 - It runs automatically after successful IONOS deployment and fails if core routes are not returning 200
+- Optional API smoke checks are enabled when repository secret PROD_API_BASE_URL is set
+  - Example value: https://api.your-domain.com
+  - Checks: GET /healthz must be 200, GET /api/picks must be 200 or 503

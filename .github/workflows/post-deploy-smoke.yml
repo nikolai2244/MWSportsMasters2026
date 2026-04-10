@@ -8,7 +8,7 @@ on:
 
 jobs:
   smoke:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Verify production routes
@@ -35,4 +35,48 @@ jobs:
           if ! echo "$headers" | grep -iq "x-content-type-options\|strict-transport-security\|content-security-policy\|x-frame-options\|referrer-policy"; then
             echo "Warning: no common hardening header detected on origin response"
             echo "This does not fail deploy, but should be fixed at host/CDN layer."
+          fi
+
+      - name: Verify backend health (optional)
+        env:
+          PROD_API_BASE_URL: ${{ secrets.PROD_API_BASE_URL }}
+        run: |
+          set -e
+
+          if [ -z "$PROD_API_BASE_URL" ]; then
+            echo "Skipping backend check: PROD_API_BASE_URL secret is not set."
+            exit 0
+          fi
+
+          BASE="${PROD_API_BASE_URL%/}"
+          health_code=$(curl -sS -o /tmp/health.json -w "%{http_code}" "$BASE/healthz")
+          echo "/healthz -> $health_code"
+          cat /tmp/health.json || true
+
+          if [ "$health_code" -ne 200 ]; then
+            echo "Backend health check failed"
+            exit 1
+          fi
+
+      - name: Verify backend picks endpoint (optional)
+        env:
+          PROD_API_BASE_URL: ${{ secrets.PROD_API_BASE_URL }}
+        run: |
+          set -e
+
+          if [ -z "$PROD_API_BASE_URL" ]; then
+            echo "Skipping picks endpoint check: PROD_API_BASE_URL secret is not set."
+            exit 0
+          fi
+
+          BASE="${PROD_API_BASE_URL%/}"
+          picks_code=$(curl -sS -o /tmp/picks.json -w "%{http_code}" "$BASE/api/picks")
+          echo "/api/picks -> $picks_code"
+          head -c 500 /tmp/picks.json || true
+          echo
+
+          # 200 means API + DB ready, 503 means API up but DB unavailable.
+          if [ "$picks_code" -ne 200 ] && [ "$picks_code" -ne 503 ]; then
+            echo "Unexpected response code from /api/picks"
+            exit 1
           fi
