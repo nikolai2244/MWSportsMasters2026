@@ -1,11 +1,11 @@
 ﻿import { useState, useEffect } from "react";
 // import { base44 } from "@/api/base44Client";
-import VIPGate from "../components/VIPGate";
-import BetTable from "../components/BetTable";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import VIPGate from "../VIPGate";
+import BetTable from "../Bettable";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../UI/tabs";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../UI/accordion";
 import { Loader2 } from "lucide-react";
-import { TOURNAMENT_INFO } from "@/lib/demoData";
+import { TOURNAMENT_INFO } from "../Lib/demoData";
 
 const ROUNDS = ["R1", "R2", "R3", "R4"];
 
@@ -43,10 +43,9 @@ export default function RoundDetails() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // base44.entities.Bet.list("-created_date", 200).then((data) => {
-            setBets(data);
-            setLoading(false);
-        });
+        // Keep placeholder behavior until data integration is wired.
+        setBets([]);
+        setLoading(false);
     }, []);
 
     const getRoundBets = (round, type) => bets.filter(b => b.round === round && b.bet_type === type);

@@ -1,9 +1,9 @@
 ﻿import { useState, useEffect } from "react";
 // import { base44 } from "@/api/base44Client";
-import VIPGate from "../components/VIPGate";
-import KPICards from "../components/KPICards";
-import BetTable from "../components/BetTable";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import VIPGate from "../VIPGate";
+import KPICards from "../UI/Admin/KPICards";
+import BetTable from "../Bettable";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../UI/tabs";
 import { Loader2 } from "lucide-react";
 
 const GROUP_COLUMNS = [
@@ -38,10 +38,9 @@ export default function MyBets() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // base44.entities.Bet.list("-created_date", 200).then((data) => {
-            setBets(data);
-            setLoading(false);
-        });
+        // Keep placeholder behavior until data integration is wired.
+        setBets([]);
+        setLoading(false);
     }, []);
 
     const groupBets = bets.filter(b => b.bet_type === "Group Match-Up");
