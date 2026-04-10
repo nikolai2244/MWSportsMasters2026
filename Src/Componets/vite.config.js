@@ -1,4 +1,4 @@
-﻿// ...existing code...
+// ...existing code...
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
@@ -10,12 +10,6 @@ export default defineConfig({
   ],
   build: {
     target: 'ES2020',
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-      },
-    },
     rollupOptions: {
       output: {
         manualChunks: {
