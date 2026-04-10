@@ -1,0 +1,67 @@
+name: IONOS Backup Snapshot
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "15 2 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate backup configuration
+        id: cfg
+        env:
+          IONOS_S3_ENDPOINT: ${{ secrets.IONOS_S3_ENDPOINT }}
+          IONOS_S3_BUCKET: ${{ secrets.IONOS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.IONOS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.IONOS_AWS_SECRET_ACCESS_KEY }}
+        run: |
+          set -e
+          missing=0
+          for v in IONOS_S3_ENDPOINT IONOS_S3_BUCKET AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY; do
+            if [ -z "${!v}" ]; then
+              echo "Missing required secret: $v"
+              missing=1
+            fi
+          done
+
+          if [ "$missing" -eq 1 ]; then
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Skip when secrets are missing
+        if: ${{ steps.cfg.outputs.enabled != 'true' }}
+        run: |
+          echo "Backup skipped because required IONOS secrets are not configured."
+          echo "Set IONOS_S3_ENDPOINT, IONOS_S3_BUCKET, IONOS_AWS_ACCESS_KEY_ID, IONOS_AWS_SECRET_ACCESS_KEY."
+
+      - name: Run backup script
+        if: ${{ steps.cfg.outputs.enabled == 'true' }}
+        env:
+          IONOS_S3_ENDPOINT: ${{ secrets.IONOS_S3_ENDPOINT }}
+          IONOS_S3_BUCKET: ${{ secrets.IONOS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.IONOS_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.IONOS_AWS_SECRET_ACCESS_KEY }}
+          RETENTION_DAYS: ${{ vars.BACKUP_RETENTION_DAYS }}
+          BACKUP_PREFIX: ${{ vars.BACKUP_PREFIX }}
+        run: |
+          set -e
+          chmod +x scripts/backup-ionos.sh
+          bash scripts/backup-ionos.sh | tee backup.log
+
+      - name: Upload backup log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ionos-backup-log-${{ github.run_id }}
+          path: backup.log
+          if-no-files-found: ignore
