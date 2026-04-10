@@ -16,38 +16,23 @@ import TournamentFinishes from './pages/TournamentFinishes';
 import RoundDetails from './pages/RoundDetails';
 import AdminPanel from './pages/AdminPanel';
 import LoadScreen from './loadscreen';
-
-
-// Simulate VIP status (replace with real logic as needed)
-function useVIPStatus() {
-    // Replace with real VIP check (e.g., from backend or context) if needed
-  const [isVIP, setIsVIP] = useState(false);
-  return { isVIP, setIsVIP };
-}
+import VIPGate from './VIPGate';
 
 const AuthenticatedApp = () => {
-    const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
-    const { isVIP } = useVIPStatus();
+    useAuth();
 
-    // Only allow Home page if not VIP
     return (
         <Routes>
             <Route element={<Layout />}>
                 <Route path="/" element={<Home />} />
-                {!isVIP ? (
-                    <Route path="*" element={<VIPGate />} />
-                ) : (
-                    <>
-                        <Route path="/leaderboard" element={<Leaderboard />} />
-                        <Route path="/about" element={<About />} />
-                        <Route path="/signup" element={<VIPSignup />} />
-                        <Route path="/bets" element={<MyBets />} />
-                        <Route path="/finishes" element={<TournamentFinishes />} />
-                        <Route path="/rounds" element={<RoundDetails />} />
-                        <Route path="/admin" element={<AdminPanel />} />
-                        <Route path="*" element={<PageNotFound />} />
-                    </>
-                )}
+                <Route path="/signup" element={<VIPSignup />} />
+                <Route path="/leaderboard" element={<VIPGate><Leaderboard /></VIPGate>} />
+                <Route path="/about" element={<VIPGate><About /></VIPGate>} />
+                <Route path="/bets" element={<VIPGate><MyBets /></VIPGate>} />
+                <Route path="/finishes" element={<VIPGate><TournamentFinishes /></VIPGate>} />
+                <Route path="/rounds" element={<VIPGate><RoundDetails /></VIPGate>} />
+                <Route path="/admin" element={<VIPGate><AdminPanel /></VIPGate>} />
+                <Route path="*" element={<PageNotFound />} />
             </Route>
         </Routes>
     );
