@@ -11,6 +11,14 @@ permissions:
 jobs:
   backup:
     runs-on: ubuntu-latest
+    env:
+      ALERT_SLACK_WEBHOOK_URL: ${{ secrets.ALERT_SLACK_WEBHOOK_URL }}
+      ALERT_SMTP_SERVER: ${{ secrets.ALERT_SMTP_SERVER }}
+      ALERT_SMTP_PORT: ${{ secrets.ALERT_SMTP_PORT }}
+      ALERT_SMTP_USERNAME: ${{ secrets.ALERT_SMTP_USERNAME }}
+      ALERT_SMTP_PASSWORD: ${{ secrets.ALERT_SMTP_PASSWORD }}
+      ALERT_EMAIL_TO: ${{ secrets.ALERT_EMAIL_TO }}
+      ALERT_EMAIL_FROM: ${{ secrets.ALERT_EMAIL_FROM }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -67,9 +75,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Notify Slack on failure
-        if: ${{ failure() && secrets.ALERT_SLACK_WEBHOOK_URL != '' }}
-        env:
-          ALERT_SLACK_WEBHOOK_URL: ${{ secrets.ALERT_SLACK_WEBHOOK_URL }}
+        if: ${{ failure() && env.ALERT_SLACK_WEBHOOK_URL != '' }}
         run: |
           set -e
           payload=$(cat <<'JSON'
@@ -81,15 +87,15 @@ jobs:
           curl -sS -X POST -H 'Content-type: application/json' --data "$payload" "$ALERT_SLACK_WEBHOOK_URL"
 
       - name: Notify email on failure
-        if: ${{ failure() && secrets.ALERT_SMTP_SERVER != '' && secrets.ALERT_SMTP_USERNAME != '' && secrets.ALERT_SMTP_PASSWORD != '' && secrets.ALERT_EMAIL_TO != '' && secrets.ALERT_EMAIL_FROM != '' }}
+        if: ${{ failure() && env.ALERT_SMTP_SERVER != '' && env.ALERT_SMTP_USERNAME != '' && env.ALERT_SMTP_PASSWORD != '' && env.ALERT_EMAIL_TO != '' && env.ALERT_EMAIL_FROM != '' }}
         uses: dawidd6/action-send-mail@v3
         with:
-          server_address: ${{ secrets.ALERT_SMTP_SERVER }}
-          server_port: ${{ secrets.ALERT_SMTP_PORT || '587' }}
+          server_address: ${{ env.ALERT_SMTP_SERVER }}
+          server_port: ${{ env.ALERT_SMTP_PORT != '' && env.ALERT_SMTP_PORT || '587' }}
           secure: false
-          username: ${{ secrets.ALERT_SMTP_USERNAME }}
-          password: ${{ secrets.ALERT_SMTP_PASSWORD }}
+          username: ${{ env.ALERT_SMTP_USERNAME }}
+          password: ${{ env.ALERT_SMTP_PASSWORD }}
           subject: "[MWSportsMasters2026] IONOS Backup Snapshot failed"
-          to: ${{ secrets.ALERT_EMAIL_TO }}
-          from: ${{ secrets.ALERT_EMAIL_FROM }}
+          to: ${{ env.ALERT_EMAIL_TO }}
+          from: ${{ env.ALERT_EMAIL_FROM }}
           body: "Workflow failed. Run details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
