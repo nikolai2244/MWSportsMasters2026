@@ -66,6 +66,18 @@ Optional repository variables:
 - `BACKUP_RETENTION_DAYS` (default 30)
 - `BACKUP_PREFIX` (default `repo-backups`)
 
+Optional failure-alert secrets (recommended):
+
+- `ALERT_SLACK_WEBHOOK_URL`
+- `ALERT_SMTP_SERVER`
+- `ALERT_SMTP_PORT` (default 587 if omitted)
+- `ALERT_SMTP_USERNAME`
+- `ALERT_SMTP_PASSWORD`
+- `ALERT_EMAIL_FROM`
+- `ALERT_EMAIL_TO`
+
+When configured, backup and restore verification workflows send notifications on failure.
+
 When secrets are missing, the workflow exits cleanly with a clear skip message.
 
 ## Restore

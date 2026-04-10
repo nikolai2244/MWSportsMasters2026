@@ -101,6 +101,7 @@ Deploy folder:
 - Backup automation workflow: [.github/workflows/backup-ionos.yml](.github/workflows/backup-ionos.yml)
 - Restore verification workflow: [.github/workflows/backup-restore-verify.yml](.github/workflows/backup-restore-verify.yml)
 - Store only source and config, not build outputs or real env secrets
+- Configure optional failure alerts (Slack/email) for smoke, backup, and restore workflows
 
 Automation:
 

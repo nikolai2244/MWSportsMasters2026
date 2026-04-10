@@ -65,3 +65,31 @@ jobs:
           name: ionos-backup-log-${{ github.run_id }}
           path: backup.log
           if-no-files-found: ignore
+
+      - name: Notify Slack on failure
+        if: ${{ failure() && secrets.ALERT_SLACK_WEBHOOK_URL != '' }}
+        env:
+          ALERT_SLACK_WEBHOOK_URL: ${{ secrets.ALERT_SLACK_WEBHOOK_URL }}
+        run: |
+          set -e
+          payload=$(cat <<'JSON'
+          {
+            "text": "IONOS Backup Snapshot failed for MWSportsMasters2026. Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          }
+          JSON
+          )
+          curl -sS -X POST -H 'Content-type: application/json' --data "$payload" "$ALERT_SLACK_WEBHOOK_URL"
+
+      - name: Notify email on failure
+        if: ${{ failure() && secrets.ALERT_SMTP_SERVER != '' && secrets.ALERT_SMTP_USERNAME != '' && secrets.ALERT_SMTP_PASSWORD != '' && secrets.ALERT_EMAIL_TO != '' && secrets.ALERT_EMAIL_FROM != '' }}
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.ALERT_SMTP_SERVER }}
+          server_port: ${{ secrets.ALERT_SMTP_PORT || '587' }}
+          secure: false
+          username: ${{ secrets.ALERT_SMTP_USERNAME }}
+          password: ${{ secrets.ALERT_SMTP_PASSWORD }}
+          subject: "[MWSportsMasters2026] IONOS Backup Snapshot failed"
+          to: ${{ secrets.ALERT_EMAIL_TO }}
+          from: ${{ secrets.ALERT_EMAIL_FROM }}
+          body: "Workflow failed. Run details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
